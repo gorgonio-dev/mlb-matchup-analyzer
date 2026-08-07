@@ -1,0 +1,79 @@
+{
+  "baseline_home": {
+    "log_loss": 0.69256,
+    "brier": 0.24971,
+    "accuracy": 0.52061,
+    "n": 1504,
+    "note": "always predict home team at train home rate 0.5320"
+  },
+  "logistic_2026_holdout": {
+    "log_loss": 0.68521,
+    "brier": 0.2461,
+    "accuracy": 0.54987,
+    "n": 1504,
+    "mean_p_home": 0.5334
+  },
+  "gbm_2026_holdout": {
+    "log_loss": 0.68871,
+    "brier": 0.24778,
+    "accuracy": 0.53723,
+    "n": 1504,
+    "mean_p_home": 0.5312
+  },
+  "gbm_calibrated_2026_holdout": {
+    "log_loss": 0.68925,
+    "brier": 0.24806,
+    "accuracy": 0.52527,
+    "n": 1504,
+    "mean_p_home": 0.5324
+  },
+  "selected_model": "logistic",
+  "calibration_2026": [
+    {
+      "pred": 0.382,
+      "actual": 0.389,
+      "n": 36
+    },
+    {
+      "pred": 0.428,
+      "actual": 0.411,
+      "n": 141
+    },
+    {
+      "pred": 0.479,
+      "actual": 0.486,
+      "n": 276
+    },
+    {
+      "pred": 0.525,
+      "actual": 0.527,
+      "n": 440
+    },
+    {
+      "pred": 0.573,
+      "actual": 0.546,
+      "n": 350
+    },
+    {
+      "pred": 0.621,
+      "actual": 0.571,
+      "n": 191
+    },
+    {
+      "pred": 0.668,
+      "actual": 0.673,
+      "n": 52
+    }
+  ],
+  "coefficients": {
+    "elo_diff": 0.00122,
+    "wpct_diff": -0.10523,
+    "rundiff_pg_diff": 0.22391,
+    "last10_diff": 0.17989,
+    "venue_form_diff": -0.50628,
+    "h2h_edge": -0.26387,
+    "rest_diff": -0.00461,
+    "starter_ra_diff": 0.13828
+  },
+  "intercept": 0.15104
+}
