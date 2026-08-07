@@ -64,9 +64,22 @@
   @keyframes sp{to{transform:rotate(360deg)}}
   .hide{display:none}
   .pos{color:var(--good)} .neg{color:var(--bad)}
+  #boot{position:fixed;inset:0;background:var(--bg);z-index:50;display:flex;
+        flex-direction:column;align-items:center;justify-content:center;gap:16px;
+        transition:opacity .4s}
+  #boot.off{opacity:0;pointer-events:none}
+  #boot .bigspin{width:42px;height:42px;border:3px solid var(--line);
+        border-top-color:var(--accent);border-radius:50%;animation:sp .9s linear infinite}
+  #boot .t{font-size:16px;font-weight:600;letter-spacing:.3px}
+  #boot .s{color:var(--muted);font-size:13px;max-width:280px;text-align:center}
 </style>
 </head>
 <body>
+<div id="boot">
+  <div class="bigspin"></div>
+  <div class="t">Connecting to Riaza Industries server…</div>
+  <div class="s" id="bootSub"></div>
+</div>
 <div class="wrap">
   <h1>⚾ MLB Matchup Analyzer</h1>
   <div class="sub" id="modelSub">Loading model…</div>
@@ -174,12 +187,23 @@ document.querySelectorAll(".tab").forEach(el => el.onclick = () => {
 async function j(url){ const r = await fetch(url); return r.json(); }
 
 async function init(){
-  try{
-    TEAMS = await j("/api/teams");
-    for (const sel of [$("t1"), $("t2")])
-      sel.innerHTML = TEAMS.map(t => `<option value="${t.id}">${t.name}</option>`).join("");
-    $("t2").selectedIndex = 1;
-  }catch(e){ $("modelSub").textContent = "Server starting up — refresh in a few seconds."; return; }
+  for (let attempt = 0; ; attempt++){
+    try{
+      TEAMS = await j("/api/teams");
+      if (!Array.isArray(TEAMS) || !TEAMS.length) throw new Error("empty");
+      break;
+    }catch(e){
+      if (attempt === 2) $("bootSub").textContent =
+        "Waking the server — the first visit after a quiet period can take up to a minute.";
+      await new Promise(r => setTimeout(r, 3000));
+    }
+  }
+  for (const sel of [$("t1"), $("t2")])
+    sel.innerHTML = TEAMS.map(t => `<option value="${t.id}">${t.name}</option>`).join("");
+  $("t2").selectedIndex = 1;
+  const boot = $("boot");
+  boot.classList.add("off");
+  setTimeout(() => boot.remove(), 500);
   refreshStatus();
   setInterval(refreshStatus, 60000);
 }
@@ -192,8 +216,6 @@ async function refreshStatus(){
     if (s.db && s.db.games) txt += ` · ${s.db.games.toLocaleString()} games`;
     $("modelSub").textContent = txt;
     let f = "";
-    if (s.metrics && s.metrics.holdout_accuracy)
-      f += `2026 holdout: ${(100*s.metrics.holdout_accuracy).toFixed(1)}% accuracy over ${s.metrics.holdout_n} games · `;
     f += s.updating ? "auto-update running now…"
        : (s.last_update ? `data auto-updated ${s.last_update}` : "auto-update pending");
     $("foot").textContent = f;
